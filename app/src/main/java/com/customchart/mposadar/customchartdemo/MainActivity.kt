@@ -7,16 +7,20 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ChartView.OnChartDraw {
+
+    companion object {
+        var chartView: ChartView? = null
+        var numberOfParts = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val imageView = ImageView(container.context)
-        imageView.setImageResource(R.drawable.ic_launcher_background)
         // val data = intArrayOf(5, 5, 5, 5, 5, 5)
         val data = intArrayOf(5, 3, 1, 6, 2, 5)
+        numberOfParts = data.size
         val color = intArrayOf(
             Color.RED,
             Color.BLUE,
@@ -25,14 +29,35 @@ class MainActivity : AppCompatActivity() {
             Color.MAGENTA,
             Color.GREEN)
 
-        val chartView = ChartView(this, data, data.size, color)
-
+        chartView = ChartView(this, data, color, this)
         container.addView(chartView)
 
-//        val layoutParams: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(24, 24)
-//        layoutParams.leftMargin = chartView.coordinates[0].x.toInt()
-//        layoutParams.topMargin = chartView.coordinates[0].y.toInt()
-//        imageView.layoutParams = layoutParams
-//        container.addView(imageView)
+
+
+    }
+
+    override fun onChartDraw() {
+        chartView?.let { chartView ->
+            var scaledValues: FloatArray? = chartView.scaledValues
+            var coordinates = chartView.coordinates
+
+            for (i in 0 until numberOfParts) {
+                scaledValues?.let {
+                    if ((scaledValues[i] / 360) > 0.08) {
+                        val imageView = ImageView(container.context)
+                        imageView.setImageResource(R.drawable.ic_launcher_background)
+
+                        val layoutParams: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(34, 34)
+                        //layoutParams.leftMargin = (coordinates[i].xPosition - chartView.secondaryViewRadius).toInt()
+                        //layoutParams.topMargin = (coordinates[i].yPosition - chartView.secondaryViewRadius).toInt()
+
+                        imageView.x = (coordinates[i].xPosition - chartView.secondaryViewRadius).toFloat()
+                        imageView.y = (coordinates[i].yPosition - chartView.secondaryViewRadius).toFloat()
+                        imageView.layoutParams = layoutParams
+                        container.addView(imageView)
+                    }
+                }
+            }
+        }
     }
 }

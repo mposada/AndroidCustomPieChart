@@ -4,10 +4,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
         tools:context=".MainActivity">
 
     <RelativeLayout
             android:id="@+id/container"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             android:layout_width="175dp"
             android:layout_height="175dp"
             app:layout_constraintEnd_toEndOf="parent"
